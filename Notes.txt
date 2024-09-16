@@ -1,0 +1,86 @@
+1. using react-bootstrap for frontend development
+2. watch section 3 first video really useful,
+3. using express as a frameowkr that helps in managing routes at the backend(endpoints)
+4. installing nodemon so you do not need to run the backend code after every change
+5. installing Concurrently so you do not need to keep running frontend and backend on different ports after each change
+6. MongoDB is being used as a database and Mongoose as the query language.
+7. We have two package.json, one for frontend isnide the folder and the other one at the root outside of everything, to run the backend by just specifying npm start, 
+you have made changes in the package.json file like this
+"scripts": {
+    "start": "node backend/server.js"
+  },
+8. Now in the same file, you have specified 
+  "type": "module"
+Purpose: This entry specifies that your project uses ECMAScript modules (ESM) instead of CommonJS modules.
+Effect:
+Enables the use of import and export statements in your JavaScript files.
+Changes the default behavior of the require function and other module-related features to align with the ESM specification.
+9. "main": "server.js"
+Purpose: This entry specifies the entry point of your application.
+Effect:
+When someone imports your package, Node.js will look for the server.js file as the main file to execute.
+10. In frontend package.json, we have added a proxy variable that has the localhost port number so when we fetch anything on the frontend, 
+we don't need to specify the full "http://localhost:5000/api/products" instead we can just do "api/products".
+11. the mongoose library, which is an Object Data Modeling (ODM) library for MongoDB and Node.js. It provides a straightforward, schema-based solution to model your application data
+12. So we are connecting db to node js using Mongoose in db.js file and mentioning that connection in server.js
+13. In models folder under backend, we have every information about products, orders etc
+14. In productModel file or UserModel file, we have created schemas like tables and their associated columns.
+15. So the user's file under data folder is a database seeder script(use to load sample data into the database).
+16. Since the user's file is going to hold dummy values, we can't just store the plain passwords of the users
+and want this to work as though the real user is registering, so we have to encrypt the passwords, so we install the package called bcryptjs
+17. So in seeder.js file, you are creating functions for deleting and inserting data into the database,you are also using colors package to give different clors to terminals
+based a condition. For example:  catch(error) {
+        console.log(`${error}`.red.inverse);
+        process.exit(1);}
+18. You are using process.argv[3] to grab a parameter that you are passing in terminal like this and use it to your advantage and invoke a method 
+For example::
+if(process.argv[2] === '-d'){
+    deleteData();
+} else {
+        importData();
+    }
+    here -d is what you are just using to pass in as a parameter to invoke deleteDate() function.
+19. You call the await when an api call is returning a promise which in case of seeder.js file is when you do insertMany() or deleteMany().
+20. You are writing a script in package.json to make it run faster according to your needs.
+21. We are using Postman to test out API's 
+22.we have all the routes in server.js which we don't want, so express has a router we can use so we can put our routes in separate files.
+and that is what we are doing in the routes folder.
+23.  We are fetching products from the database next we are going to create an async handler since we are using aysnc await, since mangoose methods are also 
+asynchronous. We are doing this in middleware folder.
+For example: Function Definition:
+const asyncHandler = fn => (req, res, next) => {
+    
+asyncHandler is a function that takes another function fn as an argument.
+It returns a new function that takes req, res, and next as arguments, which are the standard parameters for Express.js middleware and route handlers.
+Promise Handling:
+return Promise.resolve(fn(req, res, next)).catch(next);
+  }
+The returned function calls fn with req, res, and next as arguments.
+Promise.resolve(fn(req, res, next)) ensures that the result of fn is wrapped in a promise. This is useful because fn might be an asynchronous function returning a promise or a synchronous function.
+.catch(next) attaches a catch handler to the promise. If fn throws an error or returns a rejected promise, the error will be passed to the next function, which is the standard way to handle errors in Express.js.
+24. instead of having all our routes and handlers in our routes folder, we are going to move it to the controller folder.
+25. useParams is used to get paramerters from the router, in this case index.js has /:id which it will get rename it to productId and use it in thr product screen
+26. we have redux and slices in the nedxt two parts 
+27. so we are separating the calculation part from the normal code by putting it in the utils folder.
+28. Learn about reducer function For eg:
+                      <Badge pill bg='success' style = {{marginLeft: '5px'}}>
+                         {cartItems.reduce((a, c) => a + c.qty,0)}
+                      </Badge>
+29. in userModel, we are checking if the user entered password is the same as that stored in the database by decrypting it using userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+30. json web token is a secure way to share information between two paties such as a server and a client.(bcrypt is used for encrypting/decrypting informations while storing in the database)
+31. we are implementing jwt authentication using http cookie on the server and not on local storage on the client's browser 
+because this might be a problem and lead to security issues and attacks, here since we are only storing on server, it's much better.
+32. we can make a request to our login or auth route and when that happens if our email and password is validated then it's going to go ahead and create a json web token and it's going
+to set it as a http only cookie and then that can get sent with every request after that.
+33. to take that cookie and use it, we need to get the user id from it, to do this we install cookie parser(middleware) that will help us to easily parse the cookie from the request object.
+34. we are doing this in authMiddleware file
+35. getting rid of the token means user logout which I have done in  user controller file
+36. coming back to authentication on the frontend, we will have an auth(log in) slice in our redux state,
+it will have a set credentials action to set the user to local storage once he is authenticated and it will have a logout that will clear storage.
+37. all of the actual calls to our backend will be in user's api slice.
+38. auth means login in the entire project
+39. two main things we do in the login screen are call the login in usersApiSlice, the mutation which will actually send the request to the backend and set the cookie.
+Once we get the user data back, we then want to call from the auth slice set credentials, send that in the payload and the user gets put on the local storage, not the token.
+40. we will use a package called react toastify which will show a message if we get the wrong email address or password
