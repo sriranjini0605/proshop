@@ -84,3 +84,7 @@ it will have a set credentials action to set the user to local storage once he i
 39. two main things we do in the login screen are call the login in usersApiSlice, the mutation which will actually send the request to the backend and set the cookie.
 Once we get the user data back, we then want to call from the auth slice set credentials, send that in the payload and the user gets put on the local storage, not the token.
 40. we will use a package called react toastify which will show a message if we get the wrong email address or password
+41. Private Route is a component that directs you to login if you are trying to continue shipping without logging in, similar use.
+42. we will build something like this with adminRoute later , only let users in if they are admins.
+43. we are using a package called multer to upload images for the products.
+44. 

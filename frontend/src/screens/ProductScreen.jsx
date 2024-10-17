@@ -7,19 +7,29 @@ import {
   Image,
   ListGroup,
   Card,
+  Form,
   Button,
   FormControl,
 } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Rating from "../components/Rating";
-import { useGetProductDetailsQuery } from "../slices/productApiSlice";
+import {
+  useGetProductDetailsQuery,
+  useCreateReviewMutation,
+} from "../slices/productApiSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import { toast } from "react-toastify";
 import { addToCart } from "../slices/cartSlice";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
   const [qty, setQty] = useState(1);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+
+  const { userInfo } = useSelector((state) => state.auth);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -27,12 +37,28 @@ const ProductScreen = () => {
     data: productDetails,
     isLoading,
     error,
+    refetch,
   } = useGetProductDetailsQuery(productId);
 
+  const [createReview, { isLoading: loadingProductReview }] =
+    useCreateReviewMutation();
 
   const addToCartHandler = () => {
-    dispatch(addToCart({...productDetails,qty}))
-    navigate('/cart');
+    dispatch(addToCart({ ...productDetails, qty }));
+    navigate("/cart");
+  };
+
+  const submitHandler = async(e) => {
+    try {
+        e.preventDefault();
+        await createReview({ productId, rating, comment }).unwrap();
+        refetch();
+        toast.success("Review submitted successfully!");
+        setRating(0);
+        setComment("");
+    } catch(error) {
+      toast.error(error?.data?.message || error.error);
+    }
   };
 
   return (
@@ -130,6 +156,61 @@ const ProductScreen = () => {
                   </ListGroup.Item>
                 </ListGroup>
               </Card>
+            </Col>
+          </Row>
+          <Row className="review">
+            <Col md={6}>
+              <h2>Reviews</h2>
+              {productDetails.reviews.length === 0 && (
+                <Message>No Reviews</Message>
+              )}
+              <ListGroup variant="flush">
+                {productDetails.reviews.map((review) => (
+                  <ListGroup.Item key={review._id}>
+                    <strong>{review.name}</strong>
+                    <Rating
+                      value={review.rating}
+                      text={review.createdAt.substring(0, 10)}
+                    />
+                    <p>{review.comment}</p>
+                  </ListGroup.Item>
+                ))}
+                <ListGroup.Item>
+                  <h2>Write a customer review</h2>
+                  {loadingProductReview && <Loader />}
+                  {userInfo ? (
+                    <Form onSubmit = {submitHandler}>
+                      <Form.Group controlId="rating" className="my-2">
+                        <Form.Label>Rating</Form.Label>
+                        <FormControl
+                          as="select"
+                          value={rating}
+                          onChange={(e) => setRating(e.target.value)}
+                        >
+                          <option value="">Select...</option>
+                          <option value="1">1 - Poor</option>
+                          <option value="2">2 - Fair</option>
+                          <option value="3">3 - Good</option>
+                          <option value="4">4 - Very Good</option>
+                          <option value="5">5 - Excellent</option>
+                        </FormControl>
+                      </Form.Group>
+                      <FormControl
+                        as="textarea"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                      ></FormControl>
+                      <Button type="submit" variant="primary" className="my-2">
+                        Submit
+                      </Button>
+                    </Form>
+                  ) : (
+                    <Message>
+                      Please <Link to="/login">sign in</Link> to write a review
+                    </Message>
+                  )}
+                </ListGroup.Item>
+              </ListGroup>
             </Col>
           </Row>
         </>
