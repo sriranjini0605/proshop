@@ -5,7 +5,7 @@ import Product from "../models/productModel.js";
 // @route Get /api/products
 // @access Public
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 8;
+  const pageSize = process.env.PAGINATION_LIMIT;
 
   const page = Number(req.query.pageNumber) || 1;
   const keyword = req.query.keyword ? {
@@ -60,13 +60,13 @@ const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.image = image;
-    product.category = category;
-    product.countInStock = countInStock;
-    product.brand = brand;
+    product.name = name || product.name;
+    product.price = price || product.price;
+    product.description = description || product.description;
+    product.image = image || product.image;
+    product.category = category || product.category;
+    product.countInStock = countInStock || product.countInStock;
+    product.brand = brand || product.brand;
 
     const updatedProduct = await product.save();
     return res.json(updatedProduct);

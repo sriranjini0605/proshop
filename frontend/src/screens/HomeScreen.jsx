@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import Paginate from "../components/Paginate";
 import Message from "../components/Message";
 import ProductCarousel from "../components/ProductCarousel";
+import Meta from "../components/Meta";
 import { Link } from "react-router-dom";
 
 // HomeScreen component to display the latest products using the useGetProductsQuery hook.
@@ -31,6 +32,7 @@ const HomeScreen = () => {
         </Message>
       ) : (
         <>
+         <Meta/>
           {data.products.length !== 0 ? (
             <h2>Latest Products </h2>
           ) : (

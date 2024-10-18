@@ -12,6 +12,7 @@ import {
   FormControl,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import Meta from "../components/Meta";
 import Rating from "../components/Rating";
 import {
   useGetProductDetailsQuery,
@@ -74,6 +75,7 @@ const ProductScreen = () => {
         </Message>
       ) : (
         <>
+        <Meta title={productDetails.name} />
           <Row>
             <Col md={5}>
               <Image

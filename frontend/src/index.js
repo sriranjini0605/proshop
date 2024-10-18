@@ -15,6 +15,7 @@ import "./assets/styles/index.css";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import {HelmetProvider} from "react-helmet-async"
 import HomeScreen from "./screens/HomeScreen";
 import ProductScreen from "./screens/ProductScreen";
 import CartScreen from "./screens/CartScreen";
@@ -70,11 +71,13 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
+    <HelmetProvider>
     <Provider store={store}>
       <PayPalScriptProvider deferLoading={true}>
         <RouterProvider router={router} />
       </PayPalScriptProvider>
     </Provider>
+    </HelmetProvider>
   </React.StrictMode>
 );
 

@@ -25,12 +25,13 @@ const ProductEditScreen = () => {
     data: product,
     isLoading,
     error,
+    refetch,
   } = useGetProductDetailsQuery(productId);
   const [updateProduct, { isLoading: updateLoading }] =
     useUpdateProductMutation();
   const navigate = useNavigate();
 
-  const [uploadProductImage, {isLoading: loadingUpload}] = useUploadProductImageMutation();
+  const [uploadProductImage] = useUploadProductImageMutation();
 
 
   useEffect(() => {
@@ -62,22 +63,27 @@ const ProductEditScreen = () => {
       toast.error(result.error);
     } else {
       toast.success("Product updated successfully");
+      refetch();
       navigate("/admin/productList");
     }
   };
 
   const uploadFileHandler = async (e) => {
-    const formData = new formData();
-    formData.append("image",e.target.files[0]);
-    try {
-      const res = await uploadProductImage(formData);
-      toast.success(res.message);
-      setImage(res.image);
-      
-    }catch(error) {
-      toast.error(error?.data?.message || error.error);
+    const file = e.target.files[0];
+    if (file && (file.type === "image/jpeg" || file.type === "image/jpg")) {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const res = await uploadProductImage(formData);
+        toast.success(res.message);
+        setImage(res.image);
+      } catch (error) {
+        toast.error(error?.data?.message || error.error);
+      }
+    } else {
+      toast.error("Please upload a JPEG or JPG image.");
     }
-  }
+  };
 
   return (
     <>
@@ -128,6 +134,7 @@ const ProductEditScreen = () => {
               >
               </Form.Control>
             </Form.Group>
+            {/* {loadingUpload && <Loader/>} */}
 
             <Form.Group controlId="brand" className="my-2">
               <Form.Label>Brand</Form.Label>
